@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sqfnotes/core/sherdprf.dart';
+import 'package:sqfnotes/features/login/LoginScreen.dart';
 
 import '../../../core/database_helper.dart';
 import '../../../core/widgest/textFeild_custom.dart';
+import 'CardNote.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -16,6 +19,21 @@ class _HomescreenState extends State<Homescreen> {
     // TODO: implement initState
     super.initState();
     fetchNotes();
+    getusername();
+  }
+  String userNAme = "";
+
+ Future getusername() async {
+
+    String? name = await SharedPrfHelper.getName();
+
+    setState(() {
+      if (name != null) {
+        setState(() {
+          userNAme = name;
+        });
+      }
+    });
   }
 
   TextEditingController titlcontroller = TextEditingController();
@@ -24,18 +42,16 @@ class _HomescreenState extends State<Homescreen> {
   List<Map<String, dynamic>> mynotes = [];
 
   Future<void> fetchNotes() async {
-      print("Fetching data");
-      final data = await db.getAllNotes();
-      print("Fetched data: $data");
-      setState(() {
-        mynotes = data;
-      });
-      print("Data fetched successfully");
-
+    print("Fetching data");
+    final data = await db.getAllNotes();
+    print("Fetched data: $data");
+    setState(() {
+      mynotes = data;
+    });
+    print("Data fetched successfully");
   }
 
-
- Future addnote () async{
+  Future addnote() async {
     print("insert now new note $titlcontroller.text");
     await db.insertNotes({
       'title': titlcontroller.text,
@@ -49,7 +65,13 @@ class _HomescreenState extends State<Homescreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notes"),
+        title: Text("Notes $userNAme"),
+        actions: [
+          IconButton(onPressed: () async{
+            await SharedPrfHelper.deletall();
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
+          }, icon: Icon(Icons.delete))
+        ],
       ),
       body: mynotes.isEmpty
           ? Center(
@@ -59,16 +81,10 @@ class _HomescreenState extends State<Homescreen> {
               itemCount: mynotes.length,
               itemBuilder: (context, index) {
                 print('list view');
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 100,
-                    color: Colors.blue,
-                    child: ListTile(
-                      subtitle: Text(mynotes[index]['dec'] ?? ''),
-                      title: Text(mynotes[index]['title'] ?? ''),
-                    ),
-                  ),
+                return NoteCard(
+                  title: mynotes[index]['title'],
+                  content: mynotes[index]['dec'],
+                  onDelete: () {},
                 );
               }),
       floatingActionButton: FloatingActionButton(
@@ -95,16 +111,10 @@ class _HomescreenState extends State<Homescreen> {
               ],
             ),
             actions: [
-              TextButton(
-                  onPressed: addnote,
-                  child: const Text("Add")),
+              TextButton(onPressed: addnote, child: const Text("Add")),
               TextButton(onPressed: () {}, child: const Text("Cancel")),
             ],
           );
         });
   }
-
-
-
-
 }
