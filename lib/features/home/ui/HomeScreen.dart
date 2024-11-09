@@ -21,17 +21,20 @@ class _HomescreenState extends State<Homescreen> {
     fetchNotes();
     getusername();
   }
+
   String userNAme = "";
 
- Future getusername() async {
-
+  Future getusername() async {
+    print(" waiting  user name ");
     String? name = await SharedPrfHelper.getName();
-
     setState(() {
       if (name != null) {
+        print(" user name  is get $name");
+
         setState(() {
           userNAme = name;
         });
+        print(" add  user name   $userNAme");
       }
     });
   }
@@ -67,10 +70,13 @@ class _HomescreenState extends State<Homescreen> {
       appBar: AppBar(
         title: Text("Notes $userNAme"),
         actions: [
-          IconButton(onPressed: () async{
-            await SharedPrfHelper.deletall();
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
-          }, icon: Icon(Icons.delete))
+          IconButton(
+              onPressed: () async {
+                await SharedPrfHelper.deletall();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Loginscreen()));
+              },
+              icon: Icon(Icons.logout))
         ],
       ),
       body: mynotes.isEmpty

@@ -13,10 +13,12 @@ class SharedPrfHelper {
   static const String Keyislogin = 'islogin';
 
   static Future setName(String name) async {
+    print(" set user name in shared ");
     await prefs.setString(KeyUserName, name);
   }
 
   static Future<String?> getName() async {
+    print(" get user name in shared ");
     return prefs.getString(KeyUserName);
   }
 

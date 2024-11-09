@@ -26,7 +26,9 @@ class Loginscreen extends StatelessWidget {
               text: 'Login',
               onPressed: () async {
                 await SharedPrfHelper.setIslogin(true);
+                print(" set user name ");
                 await SharedPrfHelper.setName(usernamecontroler.text);
+                print(" set user name  ${usernamecontroler.text}");
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => Homescreen()));
               },
